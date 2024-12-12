@@ -52,7 +52,7 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
 
-  const sendMessage = (e: React.FormEvent) => {
+  const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!input.trim() || !selectedBlogger) return
 
@@ -64,7 +64,28 @@ export default function ChatPage() {
     }
     setMessages([...messages, newMessage])
     setInput('')
-    // Here you would integrate with your AI service to get the blogger's response
+
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: input,
+        bloggerId: selectedBlogger.id,
+      }),
+    })
+
+    const data = await response.json()
+    if (data.response) {
+      const aiMessage = {
+        id: (Date.now() + 1).toString(),
+        sender: 'ai',
+        content: data.response,
+        timestamp: new Date(),
+      }
+      setMessages((msgs) => [...msgs, aiMessage])
+    }
   }
 
   return (
