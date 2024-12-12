@@ -24,7 +24,12 @@ export async function POST(req: Request) {
       ],
     })
 
-    return NextResponse.json({ response: response.content[0].text })
+    const responseText =
+      response.content[0].type === 'text'
+        ? response.content[0].text
+        : 'Error: tool_use invoked somehow...'
+
+    return NextResponse.json({ response: responseText })
   } catch (error) {
     console.error(error)
     return NextResponse.json(
