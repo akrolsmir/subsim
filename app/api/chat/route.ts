@@ -1,42 +1,26 @@
-import { NextResponse } from 'next/server'
-import Anthropic from '@anthropic-ai/sdk'
+import { CoreMessage, streamText } from 'ai'
+import { anthropic } from '@ai-sdk/anthropic'
 import { getBloggerPrompt } from './prompts'
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY!,
-})
 
 export async function POST(req: Request) {
   try {
-    const { message, bloggerId } = await req.json()
+    const resp = await req.json()
+    console.log('resp', resp)
+    const { messages: userMessages, bloggerId, input } = resp
 
-    const response = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
-      max_tokens: 2048,
-      messages: [
-        {
-          role: 'assistant',
-          content: getBloggerPrompt(bloggerId),
-        },
-        {
-          role: 'user',
-          content: message,
-        },
-      ],
-    })
+    const messages = [
+      { role: 'assistant', content: getBloggerPrompt(bloggerId) },
+      ...userMessages,
+    ] as CoreMessage[]
 
-    const responseText =
-      response.content[0].type === 'text'
-        ? response.content[0].text
-        : 'Error: tool_use invoked somehow...'
-    console.log(responseText)
-
-    return NextResponse.json({ response: responseText })
+    return streamText({
+      model: anthropic('claude-3-5-sonnet-20241022'),
+      messages,
+    }).toDataStreamResponse()
   } catch (error) {
     console.error(error)
-    return NextResponse.json(
-      { error: 'Error processing request' },
-      { status: 500 }
-    )
+    return new Response(JSON.stringify({ error: 'Error processing request' }), {
+      status: 500,
+    })
   }
 }

@@ -2,6 +2,9 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
+import { anthropic } from '@ai-sdk/anthropic'
+import { getBloggerPrompt } from '../api/chat/prompts'
+import { useChat } from 'ai/react'
 
 type Blogger = {
   id: string
@@ -49,43 +52,14 @@ const bloggers: Blogger[] = [
 
 export default function ChatPage() {
   const [selectedBlogger, setSelectedBlogger] = useState<Blogger | null>(null)
-  const [messages, setMessages] = useState<Message[]>([])
-  const [input, setInput] = useState('')
+  const { messages, input, handleInputChange, handleSubmit } = useChat({
+    api: '/api/chat',
+    body: { bloggerId: selectedBlogger?.id },
+  })
 
-  const sendMessage = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!input.trim() || !selectedBlogger) return
-
-    const newMessage = {
-      id: Date.now().toString(),
-      sender: 'user',
-      content: input,
-      timestamp: new Date(),
-    }
-    setMessages([...messages, newMessage])
-    setInput('')
-
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        message: input,
-        bloggerId: selectedBlogger.id,
-      }),
-    })
-
-    const data = await response.json()
-    if (data.response) {
-      const aiMessage = {
-        id: (Date.now() + 1).toString(),
-        sender: 'ai',
-        content: data.response,
-        timestamp: new Date(),
-      }
-      setMessages((msgs) => [...msgs, aiMessage])
-    }
+  const onSubmit = (e: React.FormEvent) => {
+    if (!selectedBlogger) return
+    handleSubmit(e)
   }
 
   return (
@@ -147,11 +121,11 @@ export default function ChatPage() {
                 </div>
               ))}
             </div>
-            <form onSubmit={sendMessage} className="p-4 border-t">
+            <form onSubmit={onSubmit} className="p-4 border-t">
               <input
                 type="text"
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
+                onChange={handleInputChange}
                 className="w-full p-2 border rounded-lg"
                 placeholder="Type a message..."
               />
