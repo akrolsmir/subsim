@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
+import { getBloggerPrompt } from './prompts'
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
@@ -15,7 +16,7 @@ export async function POST(req: Request) {
       messages: [
         {
           role: 'assistant',
-          content: `Pretend you are ${bloggerId}`,
+          content: getBloggerPrompt(bloggerId),
         },
         {
           role: 'user',
@@ -28,6 +29,7 @@ export async function POST(req: Request) {
       response.content[0].type === 'text'
         ? response.content[0].text
         : 'Error: tool_use invoked somehow...'
+    console.log(responseText)
 
     return NextResponse.json({ response: responseText })
   } catch (error) {
