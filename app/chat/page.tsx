@@ -52,6 +52,7 @@ const bloggers: Blogger[] = [
 
 export default function ChatPage() {
   const [selectedBlogger, setSelectedBlogger] = useState<Blogger | null>(null)
+  const [showPrompt, setShowPrompt] = useState(false)
   const { messages, input, handleInputChange, handleSubmit } = useChat({
     api: '/api/chat',
     body: { bloggerId: selectedBlogger?.id },
@@ -98,9 +99,21 @@ export default function ChatPage() {
       <div className="flex-1 flex flex-col">
         {selectedBlogger ? (
           <>
-            <div className="p-4 border-b">
+            <div className="p-4 border-b flex justify-between items-center">
               <h2 className="text-xl font-bold">{selectedBlogger.name}</h2>
+              <button
+                onClick={() => setShowPrompt(!showPrompt)}
+                className="p-2 text-gray-500 hover:text-gray-700"
+                title="Show prompt"
+              >
+                ℹ️
+              </button>
             </div>
+            {showPrompt && (
+              <div className="p-4 bg-gray-50 border-b whitespace-pre-wrap">
+                {getBloggerPrompt(selectedBlogger.id)}
+              </div>
+            )}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {messages.map((message) => (
                 <div
