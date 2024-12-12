@@ -41,8 +41,9 @@ const bloggers: Blogger[] = [
   {
     id: 'austin-chen',
     name: 'Austin Chen',
-    avatar_url: 'https://avatars.githubusercontent.com/u/3',
-    description: 'Tech entrepreneur and writer',
+    avatar_url:
+      'https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/avatars/10bd8a14-4002-47ff-af4a-92b227423a74/avatar',
+    description: 'I made this site!',
   },
 ]
 

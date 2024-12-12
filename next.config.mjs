@@ -7,6 +7,11 @@ const nextConfig = {
         hostname: 'avatars.githubusercontent.com',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'fkousziwzbnkdkldjper.supabase.co',
+        pathname: '/storage/**',
+      },
     ],
   },
 }
