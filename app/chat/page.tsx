@@ -66,7 +66,7 @@ export default function ChatPage() {
     <div className="flex h-screen">
       {/* Blogger Selection Pane */}
       <div className="w-1/4 border-r bg-gray-50 p-4">
-        <h2 className="text-xl font-bold mb-4">Select a Blogger</h2>
+        <h2 className="text-xl font-bold mb-4">Blogger Sim</h2>
         <div className="space-y-2">
           {bloggers.map((blogger) => (
             <div
@@ -106,12 +106,12 @@ export default function ChatPage() {
                 <div
                   key={message.id}
                   className={`flex ${
-                    message.sender === 'user' ? 'justify-end' : ''
+                    message.role === 'user' ? 'justify-end' : ''
                   }`}
                 >
                   <div
-                    className={`max-w-[70%] rounded-lg p-3 ${
-                      message.sender === 'user'
+                    className={`max-w-[70%] rounded-lg p-3 whitespace-pre-wrap ${
+                      message.role === 'user'
                         ? 'bg-blue-500 text-white'
                         : 'bg-gray-200'
                     }`}
